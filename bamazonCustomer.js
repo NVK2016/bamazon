@@ -1,0 +1,1 @@
+//Firstly , irst display all of the items available for sale. Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
