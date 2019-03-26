@@ -1,0 +1,20 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "Bamazon! This is an Amazon-like storefront built with MySQL and Node.js. App will take in orders from customers and deplete stock from the store's inventory. In case if it low on stock or out stock the customer will be provided with a relevant message.",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NVK2016/bamazon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NVK2016/bamazon/issues"
+  },
+  "homepage": "https://github.com/NVK2016/bamazon#readme"
+}
