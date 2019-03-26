@@ -28,39 +28,40 @@ connection.connect(function (err) {
 });
 
 //FUNCTION FOR MANAGER VIEW 
-function managerView() { 
+function managerView() {
     inquirer.prompt([{
-		type: 'list',
-		name: 'action',
-		message: 'What would you like to do today?',
-		choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product', 'Quit']
-	}]).then(function(inquirerResponse){
+        type: 'list',
+        name: 'action',
+        message: 'What would you like to do today?',
+        choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product', 'Quit']
+    }]).then(function (inquirerResponse) {
 
         //Swicth Case 
-        switch (inquirerResponse.action){
-            case "View Products for Sale": 
-                viewAllProducts(); 
-                break; 
-            case "View Low Inventory": 
+        switch (inquirerResponse.action) {
+            case "View Products for Sale":
+                viewAllProducts();
+                break;
+            case "View Low Inventory":
                 viewLowInventory();
                 break;
-            case "Add to Inventory": 
+            case "Add to Inventory":
                 updateStockQuantity();
-                break; 
+                break;
             case "Add New Product":
-            break;  
-            case "Quit": 
-            default: 
-                console.log("Thank you for logging into Bamazon!! Goodbye"); 
-                connection.end(); 
-                break; 
+                addNewProduct();
+                break;
+            case "Quit":
+            default:
+                console.log("Thank you for logging into Bamazon!! Goodbye");
+                connection.end();
+                break;
 
         }
 
     });
 }
 
-function viewAllProducts(){
+function viewAllProducts() {
     console.log(clc.bold("\n Displaying all products in the inventory  \n"));
     // console.log("--------------------------------------------------------------- \n");
 
@@ -90,12 +91,12 @@ function viewAllProducts(){
             }
             console.log(vertical_table.toString());
             //RECURSIVE FUNCtion 
-            managerView(); 
+            managerView();
         });
 }
 
 // ANY PRODUCT THAT is LESS THAN PR EQUAL TO 5 in QUANTITY 
-function viewLowInventory(){
+function viewLowInventory() {
     console.log(clc.red.bold("\n Low in stock.... \n"));
     // console.log("--------------------------------------------------------------- \n");
 
@@ -124,46 +125,46 @@ function viewLowInventory(){
                 vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
             }
             console.log(vertical_table.toString());
-             //RECURSIVE FUNCtion 
-             managerView(); 
+            //RECURSIVE FUNCtion 
+            managerView();
         });
 }
 
 //UPDATE STOCK INVENTORY 
-function updateStockQuantity(){
+function updateStockQuantity() {
     inquirer.prompt([
-		{
-			name: "itemID",
-			type: "input",
-            message: "Please enter the item ID that you would like to re-stock to.", 
-            validate: function(input){
-                if(isNaN(input)){
-                    console.log(clc.red('\n Please enter a valid number')); 
-                    return false; 
+        {
+            name: "itemID",
+            type: "input",
+            message: "Please enter the item ID that you would like to re-stock to.",
+            validate: function (input) {
+                if (isNaN(input)) {
+                    console.log(clc.red('\n Please enter a valid number'));
+                    return false;
                 }
-                else { 
-                    return true; 
-                }
-            }
-		},
-		{
-			name: "restockQty",
-			type: "input",
-            message: "How much units of item would you like to add?", 
-            validate: function(input){
-                if(isNaN(input)){
-                    console.log(clc.red('\n Please enter a valid number')); 
-                    return false; 
-                }
-                else { 
-                    return true; 
+                else {
+                    return true;
                 }
             }
-		}
-	]).then(function(inquirerResponse) {
-        
+        },
+        {
+            name: "restockQty",
+            type: "input",
+            message: "How much units of item would you like to add?",
+            validate: function (input) {
+                if (isNaN(input)) {
+                    console.log(clc.red('\n Please enter a valid number'));
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+    ]).then(function (inquirerResponse) {
+
         //SELECT THE ITEM 
-        connection.query('SELECT * FROM products WHERE item_id = ?', [inquirerResponse.itemID], function(err, res){
+        connection.query('SELECT * FROM products WHERE item_id = ?', [inquirerResponse.itemID], function (err, res) {
             //throw error 
             if (err) throw clc.red.bold(err);
 
@@ -173,19 +174,79 @@ function updateStockQuantity(){
                 stock_quantity: [parseInt(res[0].stock_quantity) + parseInt(inquirerResponse.restockQty)]
             }, {
                 item_id: inquirerResponse.itemID
-            }], function(err, res) {
+            }], function (err, res) {
 
                 //throw error 
                 if (err) throw clc.red.bold(err);
 
                 //SUCCESSFULLY UPDATED INVENTORY 
-                console.log(clc.green.bold("Succesfully Re-stocked the item \n")); 
-                
+                console.log(clc.green.bold("Succesfully Re-stocked the item \n"));
+
                 //RECURSIVE FUNCtion 
-                managerView(); 
+                managerView();
             });
         });
 
-        
+
+    });
+}
+
+function addNewProduct() {
+    // query the database to populated the department choice list 
+    connection.query("SELECT distinct department_name FROM products", function (err, results) {
+        //Throw an error 
+        if (err) throw err;
+
+        // once you have the departemnts, prompt the user for which department they like to add inventory 
+        inquirer.prompt([{
+            name: 'productName',
+            message: 'What is the new of the product you would like to add?'
+        }, {
+            name: 'department',
+            type: 'list',
+            choices: function () {
+                var choiceArray = [];
+                for (var i = 0; i < results.length; i++) {
+                    choiceArray.push(results[i].department_name);
+                }
+                return choiceArray;
+            },
+            message: 'Which department does it fall into?'
+        }, {
+            name: 'price',
+            message: 'How much does it cost?',
+            validate: function (input) {
+                if (isNaN(input)) {
+                    console.log("Please provide a valid number");
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        }, {
+            name: 'stock',
+            message: 'How many do we have?',
+            validate: function (input) {
+                // var valid = input.match(/^[0-9]+$/)
+                if (isNaN(input)) {
+                    console.log("Please provide a valid number");
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+        }]).then(function (response) {
+
+            //INSERT DATA INTO PRODUCTS 
+            // var query = connection.query('INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES(?) ;',
+            //  [inquirerResponse.itemID], function (err, res) {
+            //     //throw error 
+            //     if (err) throw clc.red.bold(err);
+            // });
+            //RECURSIVE FUNCtion 
+            managerView();
+        });
     });
 }
