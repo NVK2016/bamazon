@@ -70,20 +70,19 @@ function purchaseItem() {
             {
                 type: "input",
                 name: "itemID",
-                message: "What is the ID of the item you would like to purchase ? [Quit qith Q]",
+                message: "What is the ID of the item you would like to purchase ? [Quit with q]",
                 validate: function (input) {
-                    console.log(typeof input + " -- " + input); 
-                    if (input.toLowerCase() === 'q'){
-            
-                        console.log("Thank you for shopping Bamazon !! " +connection.threadId); 
+                    // console.log(typeof input + " -- " + input);
+                    if (input.toLowerCase() === 'q') {
+
+                        console.log("Thank you for shopping at Bamazon !! ");
                         //Close Connection 
                         connection.end();
-                        return false ; 
                     }
-                    else if (!parseInt(input)){
-            
-                        console.log("Please provide a valid item_id number"); 
-                        return false; 
+                    else if (isNaN(input)) {
+
+                        console.log("Please provide a valid item_id number");
+                        return false;
                     }
                     else {
                         return true;
@@ -94,20 +93,19 @@ function purchaseItem() {
             {
                 type: "input",
                 name: "purchaseQty",
-                message: "How many would you like? [Quit qith Q]",
+                message: "How many would you like? [Quit with q]",
                 validate: function (input) {
-                    console.log(typeof input + " -- " + input); 
-                    if (input.toLowerCase() === 'q'){
-            
-                        console.log("Thank you for shopping Bamazon !! " +connection.threadId); 
+                    // console.log(typeof input + " -- " + input);
+                    if (input.toLowerCase() === 'q') {
+
+                        console.log("Thank you for shopping at Bamazon !! ");
                         //Close Connection 
                         connection.end();
-                        return false ; 
                     }
-                    else if (!parseInt(input)){
-            
-                        console.log("Please provide a valid number"); 
-                        return false; 
+                    else if (isNaN(input)) {
+
+                        console.log("Please provide a valid number");
+                        return false;
                     }
                     else {
                         return true;
@@ -116,25 +114,48 @@ function purchaseItem() {
             }
         ]).then(function (inquirerResponse) {
 
-            var query = connection.query('SELECT * FROM products WHERE item_id = ? ;', [inquirerResponse.itemID], function(err, res){
+            var query = connection.query('SELECT * FROM products WHERE item_id = ? ;', [inquirerResponse.itemID], function (err, res) {
                 //throw error 
                 if (err) throw clc.red.bold(err);
-                console.log(res[0].stock_quantity + " Item needed: "+ inquirerResponse.purchaseQty); 
-                //Insufficient Quantity 
-                if( parseInt(inquirerResponse.purchaseQty) > parseInt(res[0].stock_quantity)){
-                    console.log(clc.redBright.bold('Insufficient Quantity!! \n'));
-                    console.log(' ------------ \n'); 
-                }
-                else { 
-                    //Billed Amount based on the items purchased 
-                    console.log(clc.green.bold("Succesfully purchased "+ inquirerResponse.purchaseQty + " " + res[0].product_name)); 
-                    var purchaseAmt = (parseFloat(res[0].price) * parseInt(inquirerResponse.purchaseQty)) ; 
-                    console.log(clc.bold('Order Total: $'+ purchaseAmt)); 
-                    console.log(' ------------ \n'); 
-                }
-            }); 
 
-            //Close Connection 
-              connection.end();
+                // console.log("Old Quantity: " + res[0].stock_quantity + " Item needed: " + inquirerResponse.purchaseQty + "of itemID: " + inquirerResponse.itemID);
+               
+                //Insufficient Quantity 
+                if (parseInt(inquirerResponse.purchaseQty) > parseInt(res[0].stock_quantity)) {
+                    console.log(clc.redBright.bold('\n Insufficient Quantity!! \n'));
+                    console.log(' ------------ \n');
+                }
+                else {
+                    //Billed Amount based on the items purchased 
+                    console.log(' ------------ \n');
+                    console.log(clc.green.bold("Succesfully purchased " + inquirerResponse.purchaseQty + " " + res[0].product_name+"(s) .\n"));
+                    var purchaseAmt = (parseFloat(res[0].price) * parseInt(inquirerResponse.purchaseQty));
+                    console.log(clc.bold('Order Total: $' + purchaseAmt));
+                    console.log(' ------------ \n');
+
+                    //UPDATE PRODUCTS TABLE WITH NEW QUANTITY 
+                    // console.log("New Quantity : " + (res[0].stock_quantity - inquirerResponse.purchaseQty));
+
+                    var query = connection.query('UPDATE products SET ? Where ?',
+                        [
+                            {
+                                stock_quantity: (res[0].stock_quantity - inquirerResponse.purchaseQty)
+                            },
+                            {
+                                item_id: inquirerResponse.itemID
+                            }
+                        ],
+                        function (error) {
+                            if (error) throw clc.red.bold(err);
+                            console.log("Updated Products successfully!");
+                        }
+                    );
+                    // logs the actual query being run
+                    // console.log(query.sql);
+                }
+                 //DISPLAYS INVENTORY 
+                 displayInventory(); 
+            });
+           
         });
 }
