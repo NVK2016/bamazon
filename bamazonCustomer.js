@@ -20,7 +20,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    // console.log("connected as id " + connection.threadId);
+    console.log("connected as id " + connection.threadId);
 
     //If connection is establised sucessfully display inventory 
     displayInventory();
@@ -56,5 +56,85 @@ function displayInventory() {
                 vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
             }
             console.log(vertical_table.toString());
+
+            //Would you like to purchase an item 
+            purchaseItem();
+        });
+
+
+}
+
+function purchaseItem() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "itemID",
+                message: "What is the ID of the item you would like to purchase ? [Quit qith Q]",
+                validate: function (input) {
+                    console.log(typeof input + " -- " + input); 
+                    if (input.toLowerCase() === 'q'){
+            
+                        console.log("Thank you for shopping Bamazon !! " +connection.threadId); 
+                        //Close Connection 
+                        connection.end();
+                        return false ; 
+                    }
+                    else if (!parseInt(input)){
+            
+                        console.log("Please provide a valid item_id number"); 
+                        return false; 
+                    }
+                    else {
+                        return true;
+                    }
+                },
+            },
+            //Enter teh items to purchase 
+            {
+                type: "input",
+                name: "purchaseQty",
+                message: "How many would you like? [Quit qith Q]",
+                validate: function (input) {
+                    console.log(typeof input + " -- " + input); 
+                    if (input.toLowerCase() === 'q'){
+            
+                        console.log("Thank you for shopping Bamazon !! " +connection.threadId); 
+                        //Close Connection 
+                        connection.end();
+                        return false ; 
+                    }
+                    else if (!parseInt(input)){
+            
+                        console.log("Please provide a valid number"); 
+                        return false; 
+                    }
+                    else {
+                        return true;
+                    }
+                },
+            }
+        ]).then(function (inquirerResponse) {
+
+            var query = connection.query('SELECT * FROM products WHERE item_id = ? ;', [inquirerResponse.itemID], function(err, res){
+                //throw error 
+                if (err) throw clc.red.bold(err);
+                console.log(res[0].stock_quantity + " Item needed: "+ inquirerResponse.purchaseQty); 
+                //Insufficient Quantity 
+                if( parseInt(inquirerResponse.purchaseQty) > parseInt(res[0].stock_quantity)){
+                    console.log(clc.redBright.bold('Insufficient Quantity!! \n'));
+                    console.log(' ------------ \n'); 
+                }
+                else { 
+                    //Billed Amount based on the items purchased 
+                    console.log(clc.green.bold("Succesfully purchased "+ inquirerResponse.purchaseQty + " " + res[0].product_name)); 
+                    var purchaseAmt = (parseFloat(res[0].price) * parseInt(inquirerResponse.purchaseQty)) ; 
+                    console.log(clc.bold('Order Total: $'+ purchaseAmt)); 
+                    console.log(' ------------ \n'); 
+                }
+            }); 
+
+            //Close Connection 
+              connection.end();
         });
 }
