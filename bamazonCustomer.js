@@ -34,6 +34,8 @@ function displayInventory() {
     var query = connection.query(
         "SELECT * FROM products ;",
         function (err, res) {
+            //throw error 
+            if (err) throw clc.red.bold(err);
             // Log all results of the SELECT statement
             //   console.log(res);
 

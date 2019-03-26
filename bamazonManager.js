@@ -67,6 +67,8 @@ function viewAllProducts(){
     var query = connection.query(
         "SELECT * FROM products ;",
         function (err, res) {
+            //throw error 
+            if (err) throw clc.red.bold(err);
             // Log all results of the SELECT statement
             var vertical_table = new Table({
 
@@ -100,6 +102,8 @@ function viewLowInventory(){
     var query = connection.query(
         "SELECT * FROM products where stock_quantity <= 5;",
         function (err, res) {
+            //throw error 
+            if (err) throw clc.red.bold(err);
             // Log all results of the SELECT statement
             var vertical_table = new Table({
 
@@ -158,8 +162,30 @@ function updateStockQuantity(){
 		}
 	]).then(function(inquirerResponse) {
         
+        //SELECT THE ITEM 
+        connection.query('SELECT * FROM products WHERE item_id = ?', [inquirerResponse.itemID], function(err, res){
+            //throw error 
+            if (err) throw clc.red.bold(err);
+
+            //UPDATE THE PRODUCT BY ADDING NEW QUANTITY TO OLD STOCK 
+            connection.query("UPDATE products SET ? WHERE ?", [{
+
+                stock_quantity: [parseInt(res[0].stock_quantity) + parseInt(inquirerResponse.restockQty)]
+            }, {
+                item_id: inquirerResponse.itemID
+            }], function(err, res) {
+
+                //throw error 
+                if (err) throw clc.red.bold(err);
+
+                //SUCCESSFULLY UPDATED INVENTORY 
+                console.log(clc.green.bold("Succesfully Re-stocked the item \n")); 
+                
+                //RECURSIVE FUNCtion 
+                managerView(); 
+            });
+        });
+
         
-         //RECURSIVE FUNCtion 
-        //  managerView(); 
     });
 }
