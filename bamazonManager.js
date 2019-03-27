@@ -101,7 +101,7 @@ function viewLowInventory() {
     // console.log("--------------------------------------------------------------- \n");
 
     var query = connection.query(
-        "SELECT * FROM products where stock_quantity <= 5;",
+        "SELECT * FROM products where stock_quantity < 5;",
         function (err, res) {
             //throw error 
             if (err) throw clc.red.bold(err);
@@ -192,8 +192,8 @@ function updateStockQuantity() {
 }
 
 function addNewProduct() {
-    // query the database to populated the department choice list 
-    connection.query("SELECT distinct department_name FROM products", function (err, results) {
+    // query the database to populated the department choice list in alphabetic order
+    connection.query("SELECT distinct department_name FROM products ORDER BY department_name;", function (err, results) {
         //Throw an error 
         if (err) throw err;
 
@@ -238,15 +238,23 @@ function addNewProduct() {
                 }
             }
         }]).then(function (response) {
+            // console.log("Inserting values : "+ response.productName + " | "+ response.department+ " | " +  response.price + " | "+ response.stock);
 
-            //INSERT DATA INTO PRODUCTS 
-            // var query = connection.query('INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES(?) ;',
-            //  [inquirerResponse.itemID], function (err, res) {
-            //     //throw error 
-            //     if (err) throw clc.red.bold(err);
-            // });
-            //RECURSIVE FUNCtion 
-            managerView();
+            // INSERT DATA INTO PRODUCTS 
+            var query = connection.query("INSERT INTO products SET ? ;",
+            {
+               product_name: response.productName ,
+                department_name: response.department,
+                price: response.price ,
+                stock_quantity: response.stock, 
+             }, function (err, res) {
+                    //throw error 
+                    if (err) throw clc.red.bold(err);
+
+                    //UPDATE PRODUCT LIST 
+                    viewAllProducts();
+                });
+            console.log(query.sql);
         });
     });
 }
