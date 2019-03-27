@@ -131,7 +131,7 @@ function purchaseItem() {
 
                 //CHeck for a item id exisits 
                 if (res.length === 0) {
-                    console.log(clc.magentaBright.bold('\n ERROR: Invalid Item ID. Please select a valid Item ID.'));
+                    console.log(clc.magentaBright.bold('\n ERROR: Product does not exists. Please select a valid Item ID.\n'));
                      //DISPLAYS INVENTORY 
                      displayInventory();
                 }

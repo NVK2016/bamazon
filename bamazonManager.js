@@ -168,25 +168,32 @@ function restockQuantity() {
             //throw error 
             if (err) throw clc.red.bold(err);
 
-            //UPDATE THE PRODUCT BY ADDING NEW QUANTITY TO OLD STOCK 
-            connection.query("UPDATE products SET ? WHERE ?", [{
+            //CHeck for a item id exisits 
+            if (res.length === 0) {
+                console.log(clc.magentaBright.bold('\n ERROR: Product does not exists. Please select a valid Item ID.\n'));
+                 //RECURSIVE FUNCtion 
+                 managerView();
+            }
+            else { 
+                //UPDATE THE PRODUCT BY ADDING NEW QUANTITY TO OLD STOCK 
+                connection.query("UPDATE products SET ? WHERE ?", [{
 
-                stock_quantity: [parseInt(res[0].stock_quantity) + parseInt(inquirerResponse.restockQty)]
-            }, {
-                item_id: inquirerResponse.itemID
-            }], function (err, res) {
+                    stock_quantity: [parseInt(res[0].stock_quantity) + parseInt(inquirerResponse.restockQty)]
+                }, {
+                    item_id: inquirerResponse.itemID
+                }], function (err, res) {
 
-                //throw error 
-                if (err) throw clc.red.bold(err);
+                    //throw error 
+                    if (err) throw clc.red.bold(err);
 
-                //SUCCESSFULLY UPDATED INVENTORY 
-                console.log(clc.green.bold("Succesfully Re-stocked the item \n"));
+                    //SUCCESSFULLY UPDATED INVENTORY 
+                    console.log(clc.green.bold("Succesfully Re-stocked the item \n"));
 
-                //RECURSIVE FUNCtion 
-                managerView();
-            });
+                    //RECURSIVE FUNCtion 
+                    managerView();
+                });
+            }
         });
-
 
     });
 }
