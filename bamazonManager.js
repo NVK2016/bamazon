@@ -20,8 +20,9 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
-
+    console.log("Succesfull Connection!! " );
+    // console.log("connected as id " + connection.threadId);
+    
     //If connection is establised sucessfully display manager diffrent options  
     managerView();
 

@@ -41,3 +41,7 @@ Currently the app can be run in 2 modes
 
 3. <u><b>Supervisior View </b></u>
     <hr />
+
+#### Owner 
+<hr/>
+Namita Shenai 
