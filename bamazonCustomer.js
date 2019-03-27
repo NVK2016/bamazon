@@ -77,9 +77,11 @@ function purchaseItem() {
                     // console.log(typeof input + " -- " + input);
                     if (input.toLowerCase() === 'q') {
 
-                        console.log("Thank you for shopping at Bamazon !! ");
+                        console.log(clc.magentaBright.bold("\n\n Thank you for shopping at Bamazon !! \n"));
                         //Close Connection 
                         connection.end();
+                        //exits the app 
+                        process.exit();
                     }
                     else if (isNaN(input)) {
 
@@ -100,9 +102,11 @@ function purchaseItem() {
                     // console.log(typeof input + " -- " + input);
                     if (input.toLowerCase() === 'q') {
 
-                        console.log("Thank you for shopping at Bamazon !! ");
+                        console.log(clc.magentaBright.bold("\n\n Thank you for shopping at Bamazon !! \n"));
                         //Close Connection 
                         connection.end();
+                        //exits the app 
+                        process.exit();
                     }
                     else if (isNaN(input)) {
 
