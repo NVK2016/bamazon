@@ -33,7 +33,7 @@ function managerView() {
         type: 'list',
         name: 'action',
         message: 'What would you like to do today?',
-        choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product', 'Quit']
+        choices: ['View Products for Sale', 'View Low Inventory', 'Restock Inventory', 'Add New Product', 'Quit']
     }]).then(function (inquirerResponse) {
 
         //Swicth Case 
@@ -44,8 +44,8 @@ function managerView() {
             case "View Low Inventory":
                 viewLowInventory();
                 break;
-            case "Add to Inventory":
-                updateStockQuantity();
+            case "Restock Inventory":
+                restockQuantity();
                 break;
             case "Add New Product":
                 addNewProduct();
@@ -131,7 +131,7 @@ function viewLowInventory() {
 }
 
 //UPDATE STOCK INVENTORY 
-function updateStockQuantity() {
+function restockQuantity() {
     inquirer.prompt([
         {
             name: "itemID",
