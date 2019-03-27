@@ -17,3 +17,5 @@ Bamazon! This is an Amazon-like storefront built with MySQL and Node.js. App wil
     * inquirer - to prompt user for inputs 
     * cli-table - display data in a tabular format
     * cli-color - to show different colored messages 
+    * format-currency - to display amount in dollars and format price  [npm install --save format-currency]
+

@@ -6,6 +6,7 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 var clc = require("cli-color");
+const formatCurrency = require('format-currency')
 
 //=================================Connect to SQL database===============================
 
@@ -55,7 +56,9 @@ function displayInventory() {
 
             //ADD ALL ROWS IN THE TABLE TO DISPLAY INVENTORY 
             for (var i = 0; i < res.length; i++) {
-                vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
+                //Displaying price in format $
+                let opts = { format: '%s%v %c', code: 'USD', symbol: '$ ' }
+                vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, formatCurrency(res[i].price, opts), res[i].stock_quantity]);
             }
             console.log(vertical_table.toString());
 
@@ -85,7 +88,7 @@ function purchaseItem() {
                     }
                     else if (isNaN(input)) {
 
-                        console.log("Please provide a valid item_id number");
+                        console.log(clc.redBright("Please provide a valid item_id number \n"));
                         return false;
                     }
                     else {
@@ -110,7 +113,7 @@ function purchaseItem() {
                     }
                     else if (isNaN(input)) {
 
-                        console.log("Please provide a valid number");
+                        console.log(clc.redBright("Please provide a valid number \n"));
                         return false;
                     }
                     else {
@@ -125,43 +128,59 @@ function purchaseItem() {
                 if (err) throw clc.red.bold(err);
 
                 // console.log("Old Quantity: " + res[0].stock_quantity + " Item needed: " + inquirerResponse.purchaseQty + "of itemID: " + inquirerResponse.itemID);
-               
-                //Insufficient Quantity 
-                if (parseInt(inquirerResponse.purchaseQty) > parseInt(res[0].stock_quantity)) {
-                    console.log(clc.redBright.bold('\n Insufficient Quantity!! \n'));
-                    console.log(' ------------ \n');
+
+                //CHeck for a item id exisits 
+                if (res.length === 0) {
+                    console.log(clc.magentaBright.bold('\n ERROR: Invalid Item ID. Please select a valid Item ID.'));
+                     //DISPLAYS INVENTORY 
+                     displayInventory();
                 }
                 else {
-                    //Billed Amount based on the items purchased 
-                    console.log(' ------------ \n');
-                    console.log(clc.green.bold("Succesfully purchased " + inquirerResponse.purchaseQty + " " + res[0].product_name+"(s) .\n"));
-                    var purchaseAmt = (parseFloat(res[0].price) * parseInt(inquirerResponse.purchaseQty));
-                    console.log(clc.bold('Order Total: $' + purchaseAmt));
-                    console.log(' ------------ \n');
+                    //Insufficient Quantity 
+                    if (parseInt(inquirerResponse.purchaseQty) > parseInt(res[0].stock_quantity)) {
+                        console.log(clc.redBright.bold(' -----------------********************------ \n'));
+                        console.log(clc.redBright.bold('\n Insufficient Quantity, your order cannot be placed as is. \n'));
+                        console.log(clc.redBright.bold('\n Please place a new order... \n'));
+                        console.log(clc.redBright.bold(' -----------------********************------ \n'));
+                         //DISPLAYS INVENTORY 
+                         displayInventory();
+                    }
+                    else {
+                        //Billed Amount based on the items purchased 
+                        console.log(clc.blueBright.bold(' -----------------********************----------------------- \n'));
+                        console.log(clc.green.bold("Succesfully purchased " + inquirerResponse.purchaseQty + " " + res[0].product_name + "(s) .\n"));
 
-                    //UPDATE PRODUCTS TABLE WITH NEW QUANTITY 
-                    // console.log("New Quantity : " + (res[0].stock_quantity - inquirerResponse.purchaseQty));
 
-                    var query = connection.query('UPDATE products SET ? Where ?',
-                        [
-                            {
-                                stock_quantity: (res[0].stock_quantity - inquirerResponse.purchaseQty)
-                            },
-                            {
-                                item_id: inquirerResponse.itemID
+                        //UPDATE PRODUCTS TABLE WITH NEW QUANTITY 
+                        var query = connection.query('UPDATE products SET ? Where ?',
+                            [
+                                {
+                                    stock_quantity: (res[0].stock_quantity - inquirerResponse.purchaseQty)
+                                },
+                                {
+                                    item_id: inquirerResponse.itemID
+                                }
+                            ],
+                            function (error) {
+                                if (error) throw clc.red.bold(err);
+
+                                var purchaseAmt = (parseFloat(res[0].price) * parseInt(inquirerResponse.purchaseQty));
+                                // use to reformat currency strings
+                                let opts = { format: '%s%v %c', code: 'USD', symbol: '$' }
+                                console.log(clc.blueBright.bold('Order Total: ' + formatCurrency(purchaseAmt, opts)));
+                                
+                                console.log(clc.blueBright.bold('\n -----------------********************----------------------- \n'));
+                                // console.log("Updated Products successfully!");
+                                 //DISPLAYS INVENTORY 
+                                displayInventory();
                             }
-                        ],
-                        function (error) {
-                            if (error) throw clc.red.bold(err);
-                            console.log("Updated Products successfully!");
-                        }
-                    );
-                    // logs the actual query being run
-                    // console.log(query.sql);
+                        );
+                        // logs the actual query being run
+                        // console.log(query.sql);
+                    }
                 }
-                 //DISPLAYS INVENTORY 
-                 displayInventory(); 
             });
-           
+
         });
+        
 }
