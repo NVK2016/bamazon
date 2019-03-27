@@ -22,7 +22,7 @@ connection.connect(function (err) {
     if (err) throw err;
     console.log("Succesfull Connection!! " );
     // console.log("connected as id " + connection.threadId);
-    
+
     //If connection is establised sucessfully display manager diffrent options  
     managerView();
 
@@ -53,7 +53,7 @@ function managerView() {
                 break;
             case "Quit":
             default:
-                console.log("Thank you for logging into Bamazon!! Goodbye");
+                console.log(clc.magenta.bold("\n Thank you for logging into Bamazon!! Goodbye\n"));
                 connection.end();
                 break;
 
@@ -171,7 +171,7 @@ function restockQuantity() {
 
             //CHeck for a item id exisits 
             if (res.length === 0) {
-                console.log(clc.magentaBright.bold('\n ERROR: Product does not exists. Please select a valid Item ID.\n'));
+                console.log(clc.magenta.bold('\n ERROR: Product does not exists. Please select a valid Item ID.\n'));
                  //RECURSIVE FUNCtion 
                  managerView();
             }

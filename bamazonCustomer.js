@@ -81,7 +81,7 @@ function purchaseItem() {
                     // console.log(typeof input + " -- " + input);
                     if (input.toLowerCase() === 'q') {
 
-                        console.log(clc.magentaBright.bold("\n\n Thank you for shopping at Bamazon !! \n"));
+                        console.log(clc.magenta.bold("\n\n Thank you for shopping at Bamazon !! \n"));
                         //Close Connection 
                         connection.end();
                         //exits the app 
@@ -106,7 +106,7 @@ function purchaseItem() {
                     // console.log(typeof input + " -- " + input);
                     if (input.toLowerCase() === 'q') {
 
-                        console.log(clc.magentaBright.bold("\n\n Thank you for shopping at Bamazon !! \n"));
+                        console.log(clc.magenta.bold("\n\n Thank you for shopping at Bamazon !! \n"));
                         //Close Connection 
                         connection.end();
                         //exits the app 
@@ -132,7 +132,7 @@ function purchaseItem() {
 
                 //CHeck for a item id exisits 
                 if (res.length === 0) {
-                    console.log(clc.magentaBright.bold('\n ERROR: Product does not exists. Please select a valid Item ID.\n'));
+                    console.log(clc.magenta.bold('\n ERROR: Product does not exists. Please select a valid Item ID.\n'));
                      //DISPLAYS INVENTORY 
                      displayInventory();
                 }

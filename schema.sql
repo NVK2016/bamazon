@@ -14,6 +14,14 @@ create table products(
     stock_quantity int(100) NOT NULL 
 );
 
+CREATE TABLE departments(
+	department_id int NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+    department_name VARCHAR(150) NOT NULL, 
+    over_head_costs decimal(10,4) NOT NULL, 
+    product_sales decimal(10,4) NOT NULL
+);
+
+
 INSERT INTO products (product_name, department_name, price, stock_quantity)
 VALUES ("Sunglasses", "Travel Gear", 153.12, 50), 
 ("Clear Globe String Bulbs", "Electronics", 15.95,12), 
@@ -26,5 +34,12 @@ VALUES ("Sunglasses", "Travel Gear", 153.12, 50),
 ("Aloe Vera Gel", "Skin Care", 12.95, 65); 
 ("Scientific Calculator", "Office Supplies", 17.98, 100 ) , 
 ("Brother P-touch Label Maker", "Office Supplies", 34.00, 43) ; 
+
+INSERT INTO departments (department_name, over_head_costs, product_sales)
+VALUES ("Electronics" , 10000, 20000) , 
+("Office Supplies" , 20100, 30200) ,
+("Skin Care", 10000, 23000), 
+("Outdoor Games", 23456, 56789), 
+("Travel Gear",60000, 100000); 
 
 SELECT * FROM products; 
