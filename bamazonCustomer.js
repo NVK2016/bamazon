@@ -93,7 +93,7 @@ function purchaseItem() {
                         //exits the app 
                         process.exit();
                     }
-                    else if (isNaN(input)) {
+                    else if (isNaN(input) || parseInt(input) <= 0 || input === '' ) {
 
                         console.log(clc.redBright("Please provide a valid item_id number \n"));
                         return false;
@@ -118,7 +118,7 @@ function purchaseItem() {
                         //exits the app 
                         process.exit();
                     }
-                    else if (isNaN(input)) {
+                    else if (isNaN(input) || parseInt(input) <= 0 || input === '' ) {
 
                         console.log(clc.redBright("Please provide a valid number \n"));
                         return false;
