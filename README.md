@@ -43,6 +43,13 @@ Currently the app can be run in 2 modes typing the following command(s) in bash 
     2. Then it will check if the product is in stock. In case if the customer wants more than the units avaiable at the store he gets an <b>Insufficnet Supply Message</b>.
     3. In case if the units entered matched with the quantity in the store he/she **sucessfully purchases**  the item(s). Customer will be displayed with **final amount due**. 
 
+#### Screeshots:
+![customer view](https://github.com/NVK2016/bamazon/blob/master/screenshots/CustomerVIew.png?raw=true)
+
+![Purchase Item](https://github.com/NVK2016/bamazon/blob/master/screenshots/purchaseAnitem.png?raw=true)
+
+![EXIT APP](https://github.com/NVK2016/bamazon/blob/master/screenshots/goodbyeMSgonQ.png?raw=true)
+
 2. <u><b>Manager View </b></u>
     <hr />
     When a store manager logs in he/she is displayed with 4 options to choose from. 
@@ -52,6 +59,7 @@ Currently the app can be run in 2 modes typing the following command(s) in bash 
 * **Add New Product** : Will allow the manager to add a new product within the exisiting departments created. 
 * **Quit** : exit the app 
 
+![Manager View](https://github.com/NVK2016/bamazon/blob/master/screenshots/ManagerView.png?raw=true)
 3. <u><b>Supervisior View </b></u>
     <hr />
     WORK IN PROGRESS 
