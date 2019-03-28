@@ -57,7 +57,7 @@ function supervisorView() {
         //Swicth Case 
         switch (inquirerResponse.action) {
             case "View Products Sale by Department":
-
+                viewProductSales(); 
                 break;
             case 'Create New Department':
                 addNewDepartment(); 
@@ -124,4 +124,35 @@ function addNewDepartment() {
                 
             });
         });
+}
+
+function viewProductSales(){
+    var sqlJoinQuery = ""; 
+    connection.query(sqlJoinQuery, function(error, results) {
+		if (error) throw error;
+        console.log("\n Display Profits "); 
+        
+        var vertical_table = new Table({
+
+            chars: {
+                'top': '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗'
+                , 'bottom': '═', 'bottom-mid': '╧', 'bottom-left': '╚', 'bottom-right': '╝'
+                , 'left': '║', 'left-mid': '╟', 'mid': '─', 'mid-mid': '┼'
+                , 'right': '║', 'right-mid': '╢', 'middle': '│'
+            },
+            style: { 'padding-left': 2, 'padding-right': 2 }
+        });
+
+        //Add TABLE HEADERS 
+        vertical_table.push([clc.blue.bold("Department ID"), clc.blue.bold("Department Name"), clc.blue.bold("Department Name"), clc.blue.bold("Price"), clc.blue.bold("Stock Quantity")]);
+
+        //ADD ALL ROWS IN THE TABLE TO DISPLAY INVENTORY 
+        for (var i = 0; i < res.length; i++) {
+            //Displaying price in format $
+            let opts = { format: '%s%v %c', code: 'USD', symbol: '$ ' }
+            vertical_table.push([res[i].department_id, res[i].department_name, res[i].department_name, formatCurrency(res[i].price, opts), res[i].stock_quantity]);
+        }
+        console.log(vertical_table.toString());
+
+	});
 }
