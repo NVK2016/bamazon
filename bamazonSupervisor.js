@@ -39,10 +39,10 @@ function supervisorView() {
         //Swicth Case 
         switch (inquirerResponse.action) {
             case "View Products Sale by Department":
-                // viewAllProducts();
+                
                 break;
             case 'Create New Department':
-
+                // addNewDepartment(); 
                 break;
             case "Quit":
             default:
@@ -52,5 +52,44 @@ function supervisorView() {
 
         }
 
+    });
+}
+
+function addNewDepartment(){
+     // once you have the departemnts, prompt the user for which department they like to add inventory 
+     inquirer.prompt([
+        {
+        name: 'department',
+        message: 'What is the name of the department ?'
+        }, {
+        name: 'overheadCost',
+        message: 'What is the overhead cost of the department?',
+        validate: function (input) {
+            if (isNaN(input)) {
+                console.log("Please provide a valid number");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }]).then(function (response) {
+    
+        //CHECK IF DEPARTMENT EXISTS 
+
+        // INSERT DATA INTO DEPARTMENTS  
+        var query = connection.query("INSERT INTO departments SET ? ;",
+        {
+            department_name: response.department,
+            over_head_cost: response.overheadCost ,
+
+         }, function (err, res) {
+                //throw error 
+                if (err) throw clc.red.bold(err);
+
+                //UPDATE PRODUCT LIST 
+                viewAllProducts();
+            });
+        console.log(query.sql);
     });
 }

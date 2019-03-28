@@ -6,7 +6,8 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 var clc = require("cli-color");
-const formatCurrency = require('format-currency')
+const formatCurrency = require('format-currency'); 
+var figlet = require('figlet');
 
 //=================================Connect to SQL database===============================
 
@@ -24,12 +25,14 @@ connection.connect(function (err) {
     // console.log("connected as id " + connection.threadId);
     console.log("Succesfull Connection!! " );
 
-    //If connection is establised sucessfully display inventory 
-    displayInventory();
+    //Display LOGO 
+    companyLogo(); 
+    
 
 });
 
 function displayInventory() {
+
     console.log(clc.bold("\n Displaying inventory for all supplies..... until stock lasts \n"));
     // console.log("--------------------------------------------------------------- \n");
 
@@ -185,3 +188,19 @@ function purchaseItem() {
         });
         
 }
+
+function companyLogo() {
+
+    figlet('Welcome to Bamzon Store!!', function(err, data) {
+        if (err) {
+            console.log('Something went wrong...');
+            console.dir(err);
+            return;
+        }
+        console.log(data)
+        //If connection is establised sucessfully display inventory 
+        displayInventory();
+
+    });
+
+    }
