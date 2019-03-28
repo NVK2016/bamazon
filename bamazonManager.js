@@ -34,7 +34,7 @@ connection.connect(function (err) {
 
 function companyLogo() {
 
-    figlet('Welcome to Bamzon Store !!\n', function(err, data) {
+    figlet('Welcome Bamzon Manager !!\n', function(err, data) {
         if (err) {
             console.log('Something went wrong...');
             console.dir(err);
@@ -75,7 +75,10 @@ function managerView() {
             case "Quit":
             default:
                 console.log(clc.magenta.bold("\n Thank you for logging into Bamazon!! Goodbye\n"));
+                //Close SQL connection 
                 connection.end();
+                //Exit out of APP 
+                process.exit(); 
                 break;
 
         }

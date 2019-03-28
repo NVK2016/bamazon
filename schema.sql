@@ -18,7 +18,7 @@ CREATE TABLE departments(
 	department_id int NOT NULL AUTO_INCREMENT PRIMARY KEY, 
     department_name VARCHAR(150) NOT NULL, 
     over_head_costs decimal(10,4) NOT NULL, 
-    product_sales decimal(10,4) NOT NULL
+    product_sales decimal(10,4)  NULL
 );
 
 

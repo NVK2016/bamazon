@@ -6,6 +6,7 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 var clc = require("cli-color");
+var figlet = require('figlet');
 
 //=================================Connect to SQL database===============================
 
@@ -20,12 +21,29 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    console.log("Succesfull Connection!! " );
-    
-    //If connection is establised sucessfully then display different options  
-    supervisorView();
+    console.log("Succesfull Connection!! ");
+
+    companyLogo();
+
 
 });
+
+function companyLogo() {
+
+    figlet('Welcome Bamzon Supervisor !!\n', function (err, data) {
+        if (err) {
+            console.log('Something went wrong...');
+            console.dir(err);
+            return;
+        }
+        console.log(data)
+
+        //If connection is establised sucessfully then display different options  
+        supervisorView();
+
+    });
+
+}
 
 //FUNCTION FOR Supervisor VIEW 
 function supervisorView() {
@@ -39,10 +57,10 @@ function supervisorView() {
         //Swicth Case 
         switch (inquirerResponse.action) {
             case "View Products Sale by Department":
-                
+
                 break;
             case 'Create New Department':
-                // addNewDepartment(); 
+                addNewDepartment(); 
                 break;
             case "Quit":
             default:
@@ -55,41 +73,55 @@ function supervisorView() {
     });
 }
 
-function addNewDepartment(){
-     // once you have the departemnts, prompt the user for which department they like to add inventory 
-     inquirer.prompt([
+function addNewDepartment() {
+    // once you have the departemnts, prompt the user for which department they like to add inventory 
+    inquirer.prompt([
         {
-        name: 'department',
-        message: 'What is the name of the department ?'
+            name: 'department',
+            message: 'What is the name of the department ?'
         }, {
-        name: 'overheadCost',
-        message: 'What is the overhead cost of the department?',
-        validate: function (input) {
-            if (isNaN(input)) {
-                console.log("Please provide a valid number");
-                return false;
+            name: 'overheadCost',
+            message: 'What is the overhead cost of the department?',
+            validate: function (input) {
+                if (isNaN(input) || parseInt(input) <= 0) {
+                    console.logclc.redBright("\n Please provide a valid number \n");
+                    return false;
+                }
+                else {
+                    return true;
+                }
             }
-            else {
-                return true;
-            }
-        }
-    }]).then(function (response) {
-    
-        //CHECK IF DEPARTMENT EXISTS 
+        }]).then(function (response) {
 
-        // INSERT DATA INTO DEPARTMENTS  
-        var query = connection.query("INSERT INTO departments SET ? ;",
-        {
-            department_name: response.department,
-            over_head_cost: response.overheadCost ,
-
-         }, function (err, res) {
+            //CHECK IF DEPARTMENT EXISTS 
+            var query = connection.query('SELECT distinct department_name FROM products WHERE department_name = ? ;', [response.department], function (err, res) {
                 //throw error 
                 if (err) throw clc.red.bold(err);
+                console.log(res);
+                //CHeck for a item id exisits 
+                if (res.length > 0) {
+                    console.log(clc.magenta.bold('\n ERROR: Department Exists. Please enter a new department .\n'));
+                    //return to start point 
+                    supervisorView();
+                }
+                else {
+                    // INSERT DATA INTO DEPARTMENTS  
+                    var query = connection.query("INSERT INTO departments SET ? ;",
+                        {
+                            department_name: response.department,
+                            over_head_costs: response.overheadCost,
 
-                //UPDATE PRODUCT LIST 
-                viewAllProducts();
+                        }, function (err, res) {
+                            //throw error 
+                            if (err) throw clc.red.bold(err);
+
+                            console.log(clc.blue.bold('\n\tDepartment successfully added!\n'));
+
+                            supervisorView();
+                        });
+                    // console.log(query.sql);
+                }
+                
             });
-        console.log(query.sql);
-    });
+        });
 }
