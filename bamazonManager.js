@@ -167,7 +167,6 @@ function restockQuantity() {
             type: "input",
             message: "Please enter the item ID that you would like to re-stock to.",
             validate: function (input) {
-                console.log("Input: " + input);
                 if (isNaN(input)|| parseInt(input) <= 0 || input === '')  {
                     console.log(clc.red('\n Please enter a valid number'));
                     return false;
@@ -182,7 +181,6 @@ function restockQuantity() {
             type: "input",
             message: "How much units of item would you like to add?",
             validate: function (input) {
-                console.log("Input: " + input);
                 if (isNaN(input) || parseInt(input) <= 0 || input === '' ) {
                     console.log(clc.red('\n Please enter a valid number \n'));
                     return false;
