@@ -6,6 +6,8 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 var clc = require("cli-color");
+var figlet = require('figlet');
+const formatCurrency = require('format-currency'); 
 
 //=================================Connect to SQL database===============================
 
@@ -20,14 +22,33 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    console.log("Succesfull Connection!! " );
+
+    console.log("Succesfull Connection!! \n" );
     // console.log("connected as id " + connection.threadId);
 
     //If connection is establised sucessfully display manager diffrent options  
-    managerView();
+    // managerView();
+    companyLogo();
 
 });
 
+function companyLogo() {
+
+    figlet('Welcome to Bamzon Store !!\n', function(err, data) {
+        if (err) {
+            console.log('Something went wrong...');
+            console.dir(err);
+            return;
+        }
+        console.log(data)
+
+        //If connection is establised sucessfully display manager diffrent options  
+        managerView();
+
+
+    });
+
+}
 //FUNCTION FOR MANAGER VIEW 
 function managerView() {
     inquirer.prompt([{
@@ -88,7 +109,9 @@ function viewAllProducts() {
 
             //ADD ALL ROWS IN THE TABLE TO DISPLAY INVENTORY 
             for (var i = 0; i < res.length; i++) {
-                vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
+                //Displaying price in format $
+                let opts = { format: '%s%v %c', code: 'USD', symbol: '$ ' }
+                vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, formatCurrency(res[i].price, opts), res[i].stock_quantity]);
             }
             console.log(vertical_table.toString());
             //RECURSIVE FUNCtion 
@@ -123,7 +146,9 @@ function viewLowInventory() {
 
             //ADD ALL ROWS IN THE TABLE TO DISPLAY INVENTORY 
             for (var i = 0; i < res.length; i++) {
-                vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
+                //Displaying price in format $
+                let opts = { format: '%s%v %c', code: 'USD', symbol: '$ ' }
+                vertical_table.push([res[i].item_id, res[i].product_name, res[i].department_name, formatCurrency(res[i].price, opts), res[i].stock_quantity]);
             }
             console.log(vertical_table.toString());
             //RECURSIVE FUNCtion 
@@ -139,7 +164,8 @@ function restockQuantity() {
             type: "input",
             message: "Please enter the item ID that you would like to re-stock to.",
             validate: function (input) {
-                if (isNaN(input)) {
+                console.log("Input: " + input);
+                if (isNaN(input)|| parseInt(input) <= 0 || input === '')  {
                     console.log(clc.red('\n Please enter a valid number'));
                     return false;
                 }
@@ -153,8 +179,9 @@ function restockQuantity() {
             type: "input",
             message: "How much units of item would you like to add?",
             validate: function (input) {
-                if (isNaN(input)) {
-                    console.log(clc.red('\n Please enter a valid number'));
+                console.log("Input: " + input);
+                if (isNaN(input) || parseInt(input) <= 0 || input === '' ) {
+                    console.log(clc.red('\n Please enter a valid number \n'));
                     return false;
                 }
                 else {
@@ -188,7 +215,9 @@ function restockQuantity() {
                     if (err) throw clc.red.bold(err);
 
                     //SUCCESSFULLY UPDATED INVENTORY 
-                    console.log(clc.green.bold("Succesfully Re-stocked the item \n"));
+                    console.log(clc.green.bold("\n-----------------******************--------------------\n"));
+                    console.log(clc.green.bold("    Succesfully Re-stocked the item  \n"));
+                    console.log(clc.green.bold("\n-----------------******************--------------------\n"));
 
                     //RECURSIVE FUNCtion 
                     managerView();
@@ -224,8 +253,8 @@ function addNewProduct() {
             name: 'price',
             message: 'How much does it cost?',
             validate: function (input) {
-                if (isNaN(input)) {
-                    console.log("Please provide a valid number");
+                if (isNaN(input) || parseFloat(input) <= 0 || input === '') {
+                    console.log(clc.red.bold("\n Please provide a valid number \n"));
                     return false;
                 }
                 else {
@@ -237,8 +266,8 @@ function addNewProduct() {
             message: 'How many do we have?',
             validate: function (input) {
                 // var valid = input.match(/^[0-9]+$/)
-                if (isNaN(input)) {
-                    console.log("Please provide a valid number");
+                if (isNaN(input) || parseInt(input) <= 0 || input === '') {
+                    console.log(clc.red.bold("\n Please provide a valid number \n"));
                     return false;
                 }
                 else {
@@ -248,21 +277,33 @@ function addNewProduct() {
         }]).then(function (response) {
             // console.log("Inserting values : "+ response.productName + " | "+ response.department+ " | " +  response.price + " | "+ response.stock);
 
-            // INSERT DATA INTO PRODUCTS 
-            var query = connection.query("INSERT INTO products SET ? ;",
+            if (( response.productName === '' || response.productName === null )||
+            ( response.department === '' || response.department === null )||
+            ( response.price === '' || response.price === null )||
+            ( response.stock === '' || response.stock === null ))
             {
-               product_name: response.productName ,
-                department_name: response.department,
-                price: response.price ,
-                stock_quantity: response.stock, 
-             }, function (err, res) {
+                console.log(clc.red.bold('\n Please enter value do not leave it blank or undefined \n' ));
+                //UPDATE PRODUCT LIST 
+                viewAllProducts();
+            }
+            else { 
+                // INSERT DATA INTO PRODUCTS 
+                var query = connection.query("INSERT INTO products SET ? ;",
+                {
+                product_name: response.productName ,
+                    department_name: response.department,
+                    price: parseFloat(response.price) ,
+                    stock_quantity: parseInt(response.stock), 
+                }, function (err, res) {
                     //throw error 
                     if (err) throw clc.red.bold(err);
 
                     //UPDATE PRODUCT LIST 
                     viewAllProducts();
                 });
-            console.log(query.sql);
+                console.log(query.sql);
+            }
+            
         });
     });
 }

@@ -31,6 +31,9 @@ connection.connect(function (err) {
 
 });
 
+//  FUNCTIONS 
+//---------------------------------------------------------------------
+
 function displayInventory() {
 
     console.log(clc.bold("\n Displaying inventory for all supplies..... until stock lasts \n"));
@@ -179,8 +182,6 @@ function purchaseItem() {
                                 displayInventory();
                             }
                         );
-                        // logs the actual query being run
-                        // console.log(query.sql);
                     }
                 }
             });
@@ -203,4 +204,4 @@ function companyLogo() {
 
     });
 
-    }
+}
